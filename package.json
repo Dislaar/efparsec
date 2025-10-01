@@ -2,7 +2,7 @@
   "name": "efrsb-parser",
   "private": true,
   "version": "0.0.0",
-  "type": "commonjs",
+  "type": "module",
   "scripts": {
     "start": "vite",
     "dev": "vite",
@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "server": "ts-node --project tsconfig.tsnode.json src/server.ts",
     "server:watch": "nodemon --exec ts-node --project tsconfig.tsnode.json src/server.ts",
-    "server:build": "tsc --project tsconfig.node.json && node dist/server.js"
+    "server:build": "tsc --project tsconfig.node.json && node dist/server.js",
+    "vercel-build": "npm install && npx playwright install --with-deps"
   },
   "devDependencies": {
     "@playwright/test": "^1.55.1",

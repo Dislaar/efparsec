@@ -3,3 +3,4 @@ dist
 .env
 page.html
 debug.html
+.vercel
