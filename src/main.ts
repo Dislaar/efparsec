@@ -17,15 +17,15 @@ class EFRSBApp {
     this.setupBulkSearchProgress();
     console.log('Парсер ЕФРСБ инициализирован');
 
-    // Подключение WebSocket для прогресса
-    this.ws = new WebSocket('ws://localhost:8080');
-    this.ws.onmessage = (event) => {
-      const progress = JSON.parse(event.data);
-      this.updateBulkProgress(progress);
-    };
-    this.ws.onopen = () => console.log('WebSocket подключён в UI');
-    this.ws.onerror = (error) => console.error('WebSocket ошибка:', error);
-    this.ws.onclose = () => console.log('WebSocket закрыт');
+    // Подключение WebSocket для прогресса (если используешь Render)
+    // this.ws = new WebSocket('ws://localhost:8080');
+    // this.ws.onmessage = (event) => {
+    //   const progress = JSON.parse(event.data);
+    //   this.updateBulkProgress(progress);
+    // };
+    // this.ws.onopen = () => console.log('WebSocket подключён в UI');
+    // this.ws.onerror = (error) => console.error('WebSocket ошибка:', error);
+    // this.ws.onclose = () => console.log('WebSocket закрыт');
   }
 
   private updateBulkProgress(progress: { current: number; total: number; currentInn: string; percentage: number }): void {
@@ -117,17 +117,17 @@ class EFRSBApp {
   }
 
   private setupBulkSearchProgress(): void {
-  // Удаляем WebSocket
-  setInterval(async () => {
-    try {
-      const response = await fetch('/api/progress');
-      const progress = await response.json();
-      this.updateBulkProgress(progress);
-    } catch (error) {
-      console.error('Ошибка получения прогресса:', error);
-    }
-  }, 1000); // Проверяем каждую секунду
-}
+    // Поллинг для Vercel
+    setInterval(async () => {
+      try {
+        const response = await fetch('/api/progress');
+        const progress = await response.json();
+        this.updateBulkProgress(progress);
+      } catch (error) {
+        console.error('Ошибка получения прогресса:', error);
+      }
+    }, 1000);
+  }
 
   private async handleSearch(event: Event): Promise<void> {
     event.preventDefault();
@@ -229,8 +229,8 @@ class EFRSBApp {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(searchParams),
-      }); // Изменено
-      const result = await response.json(); // Изменено
+      });
+      const result = await response.json();
 
       if (result.success && result.data.length > 0) {
         this.currentResults = result.data;
@@ -273,8 +273,8 @@ class EFRSBApp {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ innList }),
-    }); // Изменено
-    const bulkResult: BulkParseResult = await response.json(); // Изменено
+    });
+    const bulkResult = await response.json();
     console.log('Результат bulkSearch:', bulkResult);
 
     this.currentBulkResults = bulkResult.results;

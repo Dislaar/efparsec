@@ -3,10 +3,8 @@ import { SearchParams, ParseResult, BulkParseResult, BulkSearchResult, Bankruptc
 import { validateINN } from './utils';
 import { Solver } from '@2captcha/captcha-solver';
 import { EventEmitter } from 'events';
-import { updateProgress } from '../api/progress';
 
 export class EFRSBParser {
-  //private solver = new Solver('06dc1226bf2e6dc40227cc6c608ede0e');
   private solver = new Solver(process.env.TWOCAPTCHA_KEY || '06dc1226bf2e6dc40227cc6c608ede0e');
   private browser: Browser | null = null;
   private page: Page | null = null;
@@ -111,7 +109,7 @@ export class EFRSBParser {
       const searchInput = '[formcontrolname="searchString"]';
       console.log('Ожидание поля ввода:', searchInput);
       await this.page.waitForSelector(searchInput, { state: 'visible', timeout: 30000 });
-      await this.page.fill(searchInput, ''); // Очистка поля перед вводом
+      await this.page.fill(searchInput, '');
       await this.page.fill(searchInput, query);
       console.log('Введён запрос:', query);
 
@@ -119,7 +117,6 @@ export class EFRSBParser {
       const regionSelector = 'input[role="combobox"]:not([readonly])';
       console.log('Ожидание селектора региона:', regionSelector);
       try {
-        // Проверяем все элементы с role="combobox"
         const comboboxes = await this.page.$$('input[role="combobox"]');
         console.log('Найдено элементов с role="combobox":', comboboxes.length);
         for (let i = 0; i < comboboxes.length; i++) {
@@ -144,9 +141,6 @@ export class EFRSBParser {
         console.log('Выбран регион с альтернативным селектором:', region);
       }
 
-      // Ожидание полной загрузки DOM после выбора региона
-      await this.page.waitForLoadState('domcontentloaded', { timeout: 30000 });
-
       // Проверка CAPTCHA после выбора региона
       const captcha = await this.page.$('.g-recaptcha');
       if (captcha) {
@@ -165,30 +159,18 @@ export class EFRSBParser {
           const textarea = document.getElementById('g-recaptcha-response') as HTMLTextAreaElement;
           if (textarea) textarea.value = code;
         }, captchaCode);
-        const submitCaptcha = await this.page.$('input[type="submit"], button[type="submit"]');
-        if (submitCaptcha) {
-          console.log('Отправляем форму CAPTCHA...');
-          await submitCaptcha.click();
-          await this.page.waitForTimeout(2000);
-        }
+          const submitCaptcha = await this.page.$('input[type="submit"], button[type="submit"]');
+          if (submitCaptcha) {
+            console.log('Отправляем форму CAPTCHA...');
+            await submitCaptcha.click();
+            await this.page.waitForTimeout(2000);
+          }
       }
 
-      // Кнопка поиска (лупа)
+      // Кнопка поиска
       const submitButton = '.u-svg-lupa';
       console.log('Ожидание кнопки поиска:', submitButton);
       try {
-        // Проверяем все потенциальные элементы кнопки поиска
-        const buttonSelectors = ['.u-svg-lupa', '.itm-lupa', '.itm-lupa__img'];
-        for (const selector of buttonSelectors) {
-          const elements = await this.page.$$(selector);
-          console.log(`Найдено элементов с ${selector}:`, elements.length);
-          for (let i = 0; i < elements.length; i++) {
-            const isVisible = await elements[i].isVisible();
-            const classes = await elements[i].getAttribute('class');
-            console.log(`Элемент ${selector} ${i + 1}: visible=${isVisible}, classes=${classes}`);
-          }
-        }
-
         await this.page.waitForSelector(submitButton, { state: 'visible', timeout: 40000 });
         await this.page.click(submitButton);
         console.log('Нажата кнопка поиска (.u-svg-lupa)');
@@ -314,23 +296,24 @@ export class EFRSBParser {
     }
 
     let totalProcessed = 0;
+    const results: BulkSearchResult[] = [];
 
     try {
-      const results: BulkSearchResult[] = [];
       for (const [index, inn] of innList.entries()) {
-        totalProcessed++;
         const trimmedInn = inn.trim();
+        totalProcessed++;
         const validation = validateINN(trimmedInn);
         if (!validation.isValid) {
-          this.dispatchProgressEvent(index, innList.length, trimmedInn);
+          this.dispatchProgressEvent(index + 1, innList.length, trimmedInn);
           results.push({ inn: trimmedInn, isBankrupt: false, cases: [], error: validation.message });
+          await new Promise(resolve => setTimeout(resolve, 1000)); // Задержка 1 сек
           continue;
         }
         const params: SearchParams = { type: 'inn', query: trimmedInn, region: 'Донецкая Народная Республика' };
         const result = await this.search(params);
-        this.dispatchProgressEvent(index, innList.length, trimmedInn);
+        this.dispatchProgressEvent(index + 1, innList.length, trimmedInn);
         results.push({ inn: trimmedInn, isBankrupt: result.success && result.data.length > 0, cases: result.data, error: result.error });
-        await new Promise(resolve => setTimeout(resolve, 1000)); // Задержка между запросами
+        await new Promise(resolve => setTimeout(resolve, 1000)); // Задержка 1 сек
       }
 
       return { success: true, results, totalProcessed };
@@ -338,7 +321,7 @@ export class EFRSBParser {
       console.error('Ошибка массового поиска:', error);
       return {
         success: false,
-        results: [],
+        results,
         totalProcessed,
         error: error instanceof Error ? error.message : 'Неизвестная ошибка'
       };
@@ -362,25 +345,14 @@ export class EFRSBParser {
     }
     return { isValid: true, message: '' };
   }
-  private dispatchProgressEvent(current: number, total: number, currentInn: string): void {
-  const progress = { current, total, currentInn, percentage: Math.round((current / total) * 100) };
-  console.log('Прогресс массового поиска:', progress);
-  this.eventEmitter.emit('progress', progress);
-  updateProgress(progress); // Обновляем прогресс для API
-}
-/*
+
   private dispatchProgressEvent(current: number, total: number, currentInn: string): void {
     const progress = { current, total, currentInn, percentage: Math.round((current / total) * 100) };
     console.log('Прогресс массового поиска:', progress);
     this.eventEmitter.emit('progress', progress);
   }
-*/
+
   onProgress(callback: (progress: { current: number; total: number; currentInn: string; percentage: number }) => void): void {
     this.eventEmitter.on('progress', callback);
   }
-
-
-  
 }
-
-

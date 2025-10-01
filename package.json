@@ -11,7 +11,7 @@
     "server": "ts-node --project tsconfig.tsnode.json src/server.ts",
     "server:watch": "nodemon --exec ts-node --project tsconfig.tsnode.json src/server.ts",
     "server:build": "tsc --project tsconfig.node.json && node dist/server.js",
-    "vercel-build": "npm install && npx playwright install --with-deps"
+    "vercel-build": "npm install"
   },
   "devDependencies": {
     "@playwright/test": "^1.55.1",

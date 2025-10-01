@@ -7,9 +7,9 @@ export default async function handler(req, res) {
 
   const parser = new EFRSBParser();
   try {
-    await parser.initialize(); // Инициализация браузера
+    await parser.initialize();
     const result = await parser.search(req.body);
-    await parser.close(); // Закрытие браузера
+    await parser.close();
     res.status(200).json(result);
   } catch (error) {
     await parser.close();
