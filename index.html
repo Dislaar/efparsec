@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Парсер ЕФРСБ</title>
+  <link rel="stylesheet" href="/src/style.css">
+</head>
+<body>
+  <header class="header">
+    <h1>Парсер ЕФРСБ</h1>
+    <p>Единый федеральный реестр сведений о банкротстве</p>
+  </header>
+
+  <main class="main">
+    <div class="container">
+      <section class="search-section">
+        <h2>Поиск информации</h2>
+        <form id="searchForm" class="search-form">
+          <div class="form-group">
+            <label for="searchType">Тип поиска:</label>
+            <select id="searchType" name="searchType">
+              <option value="debtor">По названию должника</option>
+              <option value="caseNumber">По номеру дела</option>
+              <option value="inn">По ИНН</option>
+              <option value="bulkInn">Массовый поиск по списку ИНН</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="searchQuery">Поисковый запрос:</label>
+            <input type="text" id="searchQuery" name="searchQuery" placeholder="Введите запрос">
+            <div id="innValidation" class="validation-message"></div>
+            <textarea id="innListInput" name="innListInput" placeholder="Введите список ИНН (по одному на строку)" style="display: none;"></textarea>
+          </div>
+
+          <!-- Добавляем выбор региона -->
+          <div class="form-group">
+            <label for="region">Регион:</label>
+            <select id="region" name="region">
+              <option value="Донецкая Народная Республика">Донецкая Народная Республика</option>
+              <!--<option value="">Все регионы</option>-->
+              <!-- Добавь другие регионы, если нужно -->
+            </select>
+          </div>
+
+          <button type="submit" class="btn btn-primary">
+            <span class="btn-text">Найти</span>
+            <div class="spinner" style="display: none;"></div>
+          </button>
+        </form>
+      </section>
+
+      <section id="results" class="results-section" style="display: none;">
+        <div id="bulkProgress" class="bulk-progress"></div>
+        <div class="results-header">
+          <h2>Результаты поиска</h2>
+          <div class="export-buttons">
+            <button id="exportJson" class="btn btn-secondary">Экспорт JSON</button>
+            <button id="exportCsv" class="btn btn-secondary">Экспорт CSV</button>
+          </div>
+        </div>
+        <div id="resultsContent"></div>
+      </section>
+
+      <section id="error" class="error-section" style="display: none;">
+        <div class="error-message">
+          <h3>Ошибка</h3>
+          <p id="errorText"></p>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
