@@ -18,7 +18,7 @@ class EFRSBApp {
 
   // Подключение WebSocket для прогресса (для Render)
   const wsUrl = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
-  this.ws = new WebSocket(`${wsUrl}${window.location.hostname}:8081`);
+this.ws = new WebSocket(`${wsUrl}localhost:8081`);
   this.ws.onmessage = (event) => {
     const progress = JSON.parse(event.data);
     this.updateBulkProgress(progress);
