@@ -1,6 +1,6 @@
 import { chromium, Browser, Page } from 'playwright';
-import { SearchParams, ParseResult, BulkParseResult, BulkSearchResult, BankruptcyCase } from './types2.js';
-import { validateINN } from './utils.js';
+import { SearchParams, ParseResult, BulkParseResult, BulkSearchResult, BankruptcyCase } from './types2.ts';
+import { validateINN } from './utils.tsnode.ts';
 import { Solver } from '@2captcha/captcha-solver';
 import { EventEmitter } from 'events';
 

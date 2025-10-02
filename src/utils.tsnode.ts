@@ -1,27 +1,27 @@
-import { ValidationResult, BankruptcyCase, BulkSearchResult } from './types2.js';
+import { ValidationResult, BankruptcyCase, BulkSearchResult } from './types2.ts';
 
 /**
- * Валидация ИНН
+ * Validate INN
  */
 export function validateINN(inn: string): ValidationResult {
   if (!inn) {
-    return { isValid: false, message: 'ИНН не может быть пустым' };
+    return { isValid: false, message: 'INN cannot be empty' };
   }
 
-  // Удаляем пробелы и приводим к верхнему регистру
+  // Remove spaces and convert to uppercase
   const cleanInn = inn.replace(/\s/g, '');
 
-  // Проверяем длину
+  // Checking the length
   if (cleanInn.length !== 10 && cleanInn.length !== 12) {
-    return { isValid: false, message: 'ИНН должен содержать 10 или 12 цифр' };
+    return { isValid: false, message: 'The INN must contain 10 or 12 digits.' };
   }
 
-  // Проверяем, что содержит только цифры
+  // We check that it contains only numbers.
   if (!/^\d+$/.test(cleanInn)) {
-    return { isValid: false, message: 'ИНН должен содержать только цифры' };
+    return { isValid: false, message: 'The INN must contain only numbers.' };
   }
 
-  // Проверяем контрольные суммы
+  // Checking the checksums
   if (cleanInn.length === 10) {
     return validateINN10(cleanInn);
   } else {
@@ -30,7 +30,7 @@ export function validateINN(inn: string): ValidationResult {
 }
 
 /**
- * Валидация 10-значного ИНН (юридические лица)
+ * Validation of a 10-digit INN (for legal entities)
  */
 function validateINN10(inn: string): ValidationResult {
   const coefficients = [2, 4, 10, 3, 5, 9, 4, 6, 8];
@@ -44,14 +44,14 @@ function validateINN10(inn: string): ValidationResult {
   const lastDigit = parseInt(inn[9]);
 
   if (checkDigit === lastDigit) {
-    return { isValid: true, message: 'ИНН корректен (юридическое лицо)' };
+    return { isValid: true, message: 'The INN is correct (legal entity)' };
   } else {
-    return { isValid: false, message: 'Некорректная контрольная сумма ИНН' };
+    return { isValid: false, message: 'Incorrect INN checksum' };
   }
 }
 
 /**
- * Валидация 12-значного ИНН (физические лица)
+ * Validation of a 12-digit INN (for individuals)
  */
 function validateINN12(inn: string): ValidationResult {
   const coefficients1 = [7, 2, 4, 10, 3, 5, 9, 4, 6, 8];
@@ -74,21 +74,21 @@ function validateINN12(inn: string): ValidationResult {
   const lastDigit2 = parseInt(inn[11]);
 
   if (checkDigit1 === lastDigit1 && checkDigit2 === lastDigit2) {
-    return { isValid: true, message: 'ИНН корректен (физическое лицо)' };
+    return { isValid: true, message: 'The INN is correct (for an individual)' };
   } else {
-    return { isValid: false, message: 'Некорректная контрольная сумма ИНН' };
+    return { isValid: false, message: 'Incorrect INN checksum' };
   }
 }
 
 /**
- * Форматирование даты
+ * Date formatting
  */
 export function formatDate(date: Date | string): string {
   if (typeof date === 'string') {
     date = new Date(date);
   }
   if (isNaN(date.getTime())) {
-    return 'Не указана';
+    return 'Not specified';
   }
   return date.toLocaleDateString('ru-RU', {
     day: '2-digit',
@@ -98,24 +98,24 @@ export function formatDate(date: Date | string): string {
 }
 
 /**
- * Очистка текста от лишних пробелов и символов
+ * Removing extra spaces and characters from the text
  */
 export function cleanText(text: string): string {
   return text.replace(/\s+/g, ' ').trim();
 }
 
 /**
- * Получить CSS-класс для статуса дела
+ * Get a CSS class for the case status
  */
 export function getStatusClass(status: string): string {
   switch (status.toLowerCase()) {
-    case 'активное':
+    case 'active':
       return 'status-active';
-    case 'завершено':
+    case 'completed':
       return 'status-completed';
-    case 'приостановлено':
+    case 'suspended':
       return 'status-suspended';
-    case 'прекращено':
+    case 'discontinued':
       return 'status-terminated';
     default:
       return 'status-active';
@@ -123,7 +123,7 @@ export function getStatusClass(status: string): string {
 }
 
 /**
- * Экспорт результатов в JSON
+ * Exporting results to JSON
  */
 export function exportToJSON(data: BankruptcyCase[] | BulkSearchResult[], filename: string): void {
   const json = JSON.stringify(data, null, 2);
@@ -132,24 +132,24 @@ export function exportToJSON(data: BankruptcyCase[] | BulkSearchResult[], filena
 }
 
 /**
- * Экспорт результатов в CSV
+ * Exporting results to CSV
  */
 export function exportToCSV(data: BankruptcyCase[], filename: string): void {
   const headers = [
-    'Номер дела',
-    'Должник',
-    'ИНН',
-    'ОГРН',
-    'Статус',
-    'Суд',
-    'Судья',
-    'Управляющий',
-    'Дата открытия',
-    'Сумма долга',
-    'Регион',
-    'Адрес',
-    'Категория',
-    'Последнее обновление'
+    'Case number',
+    'The debtor',
+    'INN',
+    'OGRN',
+    'Status',
+    'Court',
+    'Judge',
+    'Manager',
+    'Opening date',
+    'Amount of debt',
+    'Region',
+    'Address',
+    'Category',
+    'Last update'
   ];
 
   const csvContent = [
@@ -178,21 +178,21 @@ export function exportToCSV(data: BankruptcyCase[], filename: string): void {
 }
 
 /**
- * Экспорт результатов массового поиска в CSV
+ * Exporting mass search results to CSV
  */
 export function exportBulkResultsToCSV(data: BulkSearchResult[], filename: string): void {
   const headers = [
-    'ИНН',
-    'Статус банкротства',
-    'Количество дел',
-    'Ошибка'
+    'INN',
+    'Bankruptcy status',
+    'Number of cases',
+    'error'
   ];
 
   const csvContent = [
     headers.join(';'),
     ...data.map(item => [
       item.inn || '',
-      item.isBankrupt ? 'БАНКРОТ' : 'Чистый',
+      item.isBankrupt ? 'BANKRUPT' : 'Clean',
       item.cases.length.toString(),
       item.error || ''
     ].map(field => `"${field.replace(/"/g, '""')}"`).join(';'))
@@ -204,7 +204,7 @@ export function exportBulkResultsToCSV(data: BulkSearchResult[], filename: strin
 }
 
 /**
- * Скачивание файла
+ * Downloading a file
  */
 function downloadFile(blob: Blob, filename: string): void {
   const url = URL.createObjectURL(blob);
@@ -218,7 +218,7 @@ function downloadFile(blob: Blob, filename: string): void {
 }
 
 /**
- * Дебаунс функция для оптимизации поиска
+ * Debounce function for search optimization
  */
 export function debounce<T extends (...args: any[]) => any>(
   func: T,

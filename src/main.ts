@@ -1,6 +1,6 @@
 import './style.css';
-import { SearchParams, BankruptcyCase, BulkSearchResult, BulkParseResult } from './types';
-import { validateINN, exportToJSON, exportToCSV, exportBulkResultsToCSV, getStatusClass, debounce } from './utils';
+import { SearchParams, BankruptcyCase, BulkSearchResult, BulkParseResult } from './types2.js';
+import { validateINN, exportToJSON, exportToCSV, exportBulkResultsToCSV, getStatusClass, debounce } from './utils.js';
 
 class EFRSBApp {
   private currentResults: BankruptcyCase[] = [];
@@ -11,22 +11,22 @@ class EFRSBApp {
     this.initializeApp();
   }
 
-  private initializeApp(): void {
-    this.setupEventListeners();
-    this.setupValidation();
-    this.setupBulkSearchProgress();
-    console.log('Парсер ЕФРСБ инициализирован');
+ private initializeApp(): void {
+  this.setupEventListeners();
+  this.setupValidation();
+  console.log('Парсер ЕФРСБ инициализирован');
 
-    // Подключение WebSocket для прогресса (если используешь Render)
-    // this.ws = new WebSocket('ws://localhost:8080');
-    // this.ws.onmessage = (event) => {
-    //   const progress = JSON.parse(event.data);
-    //   this.updateBulkProgress(progress);
-    // };
-    // this.ws.onopen = () => console.log('WebSocket подключён в UI');
-    // this.ws.onerror = (error) => console.error('WebSocket ошибка:', error);
-    // this.ws.onclose = () => console.log('WebSocket закрыт');
-  }
+  // Подключение WebSocket для прогресса (для Render)
+  const wsUrl = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+  this.ws = new WebSocket(`${wsUrl}${window.location.hostname}:8081`);
+  this.ws.onmessage = (event) => {
+    const progress = JSON.parse(event.data);
+    this.updateBulkProgress(progress);
+  };
+  this.ws.onopen = () => console.log('WebSocket подключён в UI');
+  this.ws.onerror = (error) => console.error('WebSocket ошибка:', error);
+  this.ws.onclose = () => console.log('WebSocket закрыт');
+}
 
   private updateBulkProgress(progress: { current: number; total: number; currentInn: string; percentage: number }): void {
     const progressDiv = document.getElementById('bulkProgress') as HTMLDivElement;
@@ -114,19 +114,6 @@ class EFRSBApp {
           break;
       }
     });
-  }
-
-  private setupBulkSearchProgress(): void {
-    // Поллинг для Vercel
-    setInterval(async () => {
-      try {
-        const response = await fetch('/api/progress');
-        const progress = await response.json();
-        this.updateBulkProgress(progress);
-      } catch (error) {
-        console.error('Ошибка получения прогресса:', error);
-      }
-    }, 1000);
   }
 
   private async handleSearch(event: Event): Promise<void> {

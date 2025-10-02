@@ -1,19 +1,15 @@
 {
   "compilerOptions": {
     "target": "ES2020",
-    "module": "CommonJS",
-    "moduleResolution": "node",
+    "module": "ESNext",
+    "moduleResolution": "Node",
     "strict": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "skipLibCheck": true,
-    "noEmit": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true,
-    "allowJs": true,
-    "resolveJsonModule": true,
-    "isolatedModules": true
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true
   },
-  "include": ["src/server.ts", "src/parser.ts", "src/utils.ts", "src/types.ts"]
+  "include": ["src/server.tsnode.ts", "src/parser.tsnode.ts", "src/types2.ts", "src/utils.tsnode.ts"],
+  "exclude": ["node_modules"]
 }

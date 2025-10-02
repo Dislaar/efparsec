@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
-import { EFRSBParser } from './parser.js';
-import { SearchParams } from './types2.js';
+import { EFRSBParser } from './parser.tsnode.ts';
+import { SearchParams } from './types2.ts';
 import { WebSocketServer } from 'ws';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -60,7 +60,7 @@ app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
 
-const wss = new WebSocketServer({ port: Number(process.env.WS_PORT) || 8080 });
+const wss = new WebSocketServer({ port: Number(process.env.WS_PORT) || 8081 });
 wss.on('connection', (ws) => {
   console.log('WebSocket подключён');
   ws.on('message', (message) => {

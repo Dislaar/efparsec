@@ -1,5 +1,3 @@
-// Типы данных для парсера ЕФРСБ
-
 export interface BankruptcyCase {
   caseNumber: string;
   debtorName: string;
@@ -49,18 +47,3 @@ export interface ValidationResult {
   isValid: boolean;
   message: string;
 }
-
-// Константы для статусов дел
-export const CASE_STATUSES = {
-  ACTIVE: 'Активное',
-  COMPLETED: 'Завершено',
-  SUSPENDED: 'Приостановлено',
-  TERMINATED: 'Прекращено'
-} as const;
-
-// Типы поиска
-export const SEARCH_TYPES = {
-  DEBTOR: 'debtor',
-  CASE_NUMBER: 'caseNumber',
-  INN: 'inn'
-} as const;
