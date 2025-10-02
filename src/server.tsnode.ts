@@ -1,12 +1,12 @@
 import express from 'express';
 import cors from 'cors';
-import { EFRSBParser } from './parser.tsnode.ts';
-import { SearchParams } from './types2.ts';
+import { EFRSBParser } from './parser.tsnode.ts'; // .ts для ts-node
+import { SearchParams } from './types2.ts'; // .ts для ts-node
 import { WebSocketServer } from 'ws';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-const __filename = fileURLToPath(import.meta.url);
+const __filename = fileURLToPath(import.meta.url); // ESM-only, работает с module: "NodeNext"
 const __dirname = path.dirname(__filename);
 
 const app = express();
@@ -55,12 +55,12 @@ app.get('/api/progress', (req, res) => {
   res.json({ current: 0, total: 0, currentInn: '', percentage: 0 });
 });
 
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || 3001; // Динамический PORT для Render
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
 
-const wss = new WebSocketServer({ port: Number(process.env.WS_PORT) || 8081 });
+const wss = new WebSocketServer({ port: Number(process.env.WS_PORT) || 8081 }); // WebSocket на 8081
 wss.on('connection', (ws) => {
   console.log('WebSocket подключён');
   ws.on('message', (message) => {
