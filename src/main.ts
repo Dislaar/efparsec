@@ -11,14 +11,14 @@ class EFRSBApp {
     this.initializeApp();
   }
 
- private initializeApp(): void {
+private initializeApp(): void {
   this.setupEventListeners();
   this.setupValidation();
   console.log('Парсер ЕФРСБ инициализирован');
 
-  // Подключение WebSocket для прогресса (для Render)
+  // Подключение WebSocket для прогресса
   const wsUrl = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
-this.ws = new WebSocket(`${wsUrl}localhost:8081`);
+  this.ws = new WebSocket(`${wsUrl}${window.location.host}/ws`); // /ws endpoint на том же порту
   this.ws.onmessage = (event) => {
     const progress = JSON.parse(event.data);
     this.updateBulkProgress(progress);

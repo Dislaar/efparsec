@@ -55,12 +55,12 @@ app.get('/api/progress', (req, res) => {
   res.json({ current: 0, total: 0, currentInn: '', percentage: 0 });
 });
 
-const port = process.env.PORT || 3001; // Динамический PORT для Render
-app.listen(port, () => {
+const port = process.env.PORT || 3001;
+const server = app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
 
-const wss = new WebSocketServer({ port: Number(process.env.WS_PORT) || 8081 }); // WebSocket на 8081
+const wss = new WebSocketServer({ server }); // WebSocket на том же порту, что и Express
 wss.on('connection', (ws) => {
   console.log('WebSocket подключён');
   ws.on('message', (message) => {
