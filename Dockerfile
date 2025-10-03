@@ -1,7 +1,7 @@
 FROM node:22-bookworm-slim
 
 # Install deps for Playwright
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y ca-certificates \
   ca-certificates \
   fonts-liberation \
   libasound2 \
