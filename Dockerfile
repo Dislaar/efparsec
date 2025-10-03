@@ -51,4 +51,4 @@ RUN npm run build && npm run server:build
 
 EXPOSE $PORT
 
-CMD ["node", "dist/server.js"]
+CMD ["sh", "-c", "node dist/server.js"]
