@@ -1,7 +1,6 @@
-FROM node:22-bookworm
+FROM node:22-bookworm-slim
 
-WORKDIR /opt/render/project/src
-
+# Install deps for Playwright
 RUN apt-get update && apt-get install -y \
   ca-certificates \
   fonts-liberation \
@@ -37,11 +36,14 @@ RUN apt-get update && apt-get install -y \
   libxtst6 \
   lsb-release \
   wget \
-  xdg-utils
+  xdg-utils \
+  && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm install
+RUN npm ci --only=production
 
 COPY . .
 
