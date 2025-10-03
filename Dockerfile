@@ -43,7 +43,7 @@ WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm ci --only=production
+RUN npm ci # Install all deps (dev + prod) for build
 
 COPY . .
 
