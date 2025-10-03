@@ -37,6 +37,7 @@ RUN apt-get update && apt-get install -y \
   lsb-release \
   wget \
   xdg-utils \
+  zutty \
   && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
@@ -47,7 +48,7 @@ RUN npm ci # Install all deps (dev + prod) for build
 
 COPY . .
 
-RUN npm run build && npm run server:build
+RUN npm run build && tsc --project tsconfig.node.json
 
 EXPOSE $PORT
 
