@@ -55,12 +55,12 @@ app.get('/api/progress', (req, res) => {
   res.json({ current: 0, total: 0, currentInn: '', percentage: 0 });
 });
 
-const port = process.env.PORT || 3001;
-const server = app.listen(port, () => {
+const port = Number(process.env.PORT) || 3001;
+const server = app.listen(port, '0.0.0.0', () => {
   console.log(`Server running on port ${port}`);
 });
 
-const wss = new WebSocketServer({ server }); // WebSocket на том же порту, что и Express
+const wss = new WebSocketServer({ server }); // WebSocket на том же порту
 wss.on('connection', (ws) => {
   console.log('WebSocket подключён');
   ws.on('message', (message) => {
