@@ -44,6 +44,7 @@ WORKDIR /app
 COPY package*.json ./
 
 RUN npm ci # Install all deps (dev + prod) for build
+RUN npx playwright install # Download Playwright browsers
 
 RUN npm install -g typescript # Ensure tsc is global for PATH
 
