@@ -34,7 +34,7 @@ private initializeApp(): void {
       progressDiv.style.display = 'block';
       progressDiv.innerHTML = `
         <p>Обработка ИНН: ${progress.currentInn}</p>
-        <p>Прогресс: ${progress.percentage}% (${progress.current + 1}/${progress.total})</p>
+        <p>Прогресс: ${progress.percentage}% (${progress.current}/${progress.total})</p>
         <div class="progress-bar" style="width: ${progress.percentage}%"></div>
       `;
     }
