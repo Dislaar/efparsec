@@ -37,7 +37,6 @@ RUN apt-get update && apt-get install -y \
   lsb-release \
   wget \
   xdg-utils \
-  zutty \
   && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
@@ -45,6 +44,8 @@ WORKDIR /app
 COPY package*.json ./
 
 RUN npm ci # Install all deps (dev + prod) for build
+
+RUN npm install -g typescript # Ensure tsc is global for PATH
 
 COPY . .
 
