@@ -13,6 +13,7 @@ export interface BankruptcyCase {
   address?: string;
   category?: string;
   lastUpdate?: string;
+  publicationDate?: string;
 }
 
 export interface SearchParams {
@@ -33,6 +34,7 @@ export interface BulkSearchResult {
   inn: string;
   isBankrupt: boolean;
   cases: BankruptcyCase[];
+  publicationDate?: string; // Добавлено как опциональное
   error?: string;
 }
 
